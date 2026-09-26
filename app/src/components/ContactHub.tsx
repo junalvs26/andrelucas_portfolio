@@ -113,7 +113,15 @@ export default function ContactHub() {
 
   return (
     <div ref={layerRef} className="absolute inset-0">
-      {/* Aneis de onda, centrados e sem interceptar ponteiro. */}
+      {/*
+        Onda de renascimento.
+
+        Eram tres aneis desenhados com `border` em CSS porque eu nao sabia que
+        existia arte pronta - `public/ui/rebirth_wave.webp` estava no disco sem
+        nenhuma referencia no codigo desde o inicio do projeto. Um anel de borda
+        de 1px le como forma geometrica; o asset tem queda de intensidade e
+        textura, que e o que faz ler como onda de luz.
+      */}
       <div
         ref={ringsRef}
         className="pointer-events-none absolute inset-0 overflow-hidden"
@@ -123,15 +131,26 @@ export default function ContactHub() {
           <div
             key={i}
             data-ring
-            className="absolute left-1/2 top-1/2 rounded-full border border-pureWhite/40"
+            className="absolute left-1/2 top-1/2"
             style={{
-              width: "38vmin",
-              height: "38vmin",
+              width: "62vmin",
+              height: "62vmin",
               opacity: 0,
               transform: "translate3d(-50%,-50%,0) scale(0.2)",
               willChange: "transform, opacity",
+              // Aditivo sobre o preto: as ondas se somam onde se cruzam, em vez
+              // de uma tapar a outra.
+              mixBlendMode: "screen",
             }}
-          />
+          >
+            <img
+              src="/ui/rebirth_wave.webp"
+              alt=""
+              decoding="async"
+              draggable={false}
+              className="h-full w-full object-contain"
+            />
+          </div>
         ))}
       </div>
 

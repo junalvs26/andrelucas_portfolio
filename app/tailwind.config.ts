@@ -26,13 +26,7 @@ const config: Config = {
       fontFamily: {
         // As duas primeiras sao as variaveis que o `next/font` define no <html>
         // (fontes auto-hospedadas). Os nomes literais ficam so como fallback.
-        mono: [
-          'var(--font-jetbrains-mono)',
-          'var(--font-space-mono)',
-          'JetBrains Mono',
-          'ui-monospace',
-          'monospace',
-        ],
+        mono: ['var(--font-jetbrains-mono)', 'JetBrains Mono', 'ui-monospace', 'monospace'],
       },
       animation: {
         'pulse-slow': 'pulse 3s ease-in-out infinite',

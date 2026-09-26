@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from 'next'
-import { JetBrains_Mono, Space_Mono } from 'next/font/google'
+import { JetBrains_Mono } from 'next/font/google'
 import './globals.css'
 import { ReducedMotionProvider } from '@/hooks/useReducedMotion'
 
@@ -16,18 +16,17 @@ import { ReducedMotionProvider } from '@/hooks/useReducedMotion'
  * `next/font` baixa as fontes no momento do BUILD e as serve do proprio
  * dominio. Resultado: zero requisicao externa no caminho critico, e zero
  * troca de fonte depois do primeiro paint.
+ *
+ * Apenas UMA familia, de proposito. Havia tambem Space Mono, mas nada no design
+ * a chamava - ela existia so como fallback atras da JetBrains Mono, que ja
+ * cobre todos os pesos usados. Cada familia a mais e mais arquivos servidos e
+ * mais uma chance de o build falhar por rede (o download do Space Mono falhou
+ * numa das execucoes e caiu em fonte de sistema).
  */
 const jetbrainsMono = JetBrains_Mono({
   subsets: ['latin'],
   weight: ['300', '400', '500', '600', '700'],
   variable: '--font-jetbrains-mono',
-  display: 'swap',
-})
-
-const spaceMono = Space_Mono({
-  subsets: ['latin'],
-  weight: ['400', '700'],
-  variable: '--font-space-mono',
   display: 'swap',
 })
 
@@ -61,9 +60,7 @@ export default function RootLayout({
   return (
     <html
       lang="pt-BR"
-      className={
-        'scrollbar-hide ' + jetbrainsMono.variable + ' ' + spaceMono.variable
-      }
+      className={'scrollbar-hide ' + jetbrainsMono.variable}
       /*
        * Fundo preto inline no proprio <html>.
        *

@@ -1,5 +1,6 @@
 'use client'
 
+import AtmosphereLayers from '@/components/AtmosphereLayers'
 import CharacterCanvas from '@/components/CharacterCanvas'
 import SceneBackdrop from '@/components/SceneBackdrop'
 import SceneIntro from '@/components/SceneIntro'
@@ -37,6 +38,10 @@ export default function PortfolioPage() {
           que era o que fazia os elementos piscarem na troca de cena. */}
       <div className="pointer-events-none fixed inset-0 overflow-hidden">
         <SceneBackdrop />
+
+        {/* Atmosfera entre o fundo e o personagem: e o que cria profundidade e,
+            de quebra, suaviza a ampliacao do background. */}
+        <AtmosphereLayers />
 
         <div className="absolute inset-0 z-0">
           <CharacterCanvas />

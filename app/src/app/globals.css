@@ -56,8 +56,7 @@ body {
   color: var(--pure-white);
   /* As variaveis vem do `next/font` no layout; os nomes literais ficam como
      fallback para o caso de a fonte auto-hospedada nao ter carregado ainda. */
-  font-family: var(--font-jetbrains-mono), var(--font-space-mono), 'JetBrains Mono',
-    ui-monospace, monospace;
+  font-family: var(--font-jetbrains-mono), 'JetBrains Mono', ui-monospace, monospace;
   font-size: 16px;
   line-height: 1.6;
   -webkit-font-smoothing: antialiased;

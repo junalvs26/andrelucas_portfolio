@@ -69,6 +69,8 @@ const MAX_SPRITE_UPSCALE = 1.35
 interface Sequences {
   frames: Record<SequenceName, (HTMLImageElement | null)[]>
   glow: HTMLImageElement | null
+  /** Cone de luz projetado pelos oculos. Asset ja existia, sem uso ate aqui. */
+  beam: HTMLImageElement | null
 }
 
 /**
@@ -114,8 +116,15 @@ async function loadSequences(): Promise<Sequences> {
     })
   )
 
+  let beam: HTMLImageElement | null = null
+  jobs.push(
+    load("/ui/projection_beam.webp").then((img) => {
+      beam = img
+    })
+  )
+
   await Promise.all(jobs)
-  return { frames, glow }
+  return { frames, glow, beam }
 }
 
 interface DrawFrame {
@@ -217,6 +226,7 @@ export default function CharacterCanvas() {
       h: number,
       pose: Pose,
       glowAmount: number,
+      beamAmount: number,
       time: number
     ) => {
       const cfg = STATE_MAP[stateName] || STATE_MAP.idle
@@ -236,6 +246,40 @@ export default function CharacterCanvas() {
       const y = h - drawH - h * 0.06 + pose.y * h
 
       ctx.save()
+
+      // ---- Sombra de contato -------------------------------------------
+      // Desenhada ANTES do sprite e dentro do mesmo canvas, entao ela nunca
+      // perde o alinhamento com os pes - um elemento DOM separado teria que
+      // perseguir a posicao do sprite a cada frame e chegaria sempre atrasado.
+      //
+      // Sem isso o personagem flutua: nao havia nada indicando contato com o
+      // chao, e e o que mais faz uma figura parecer adesivo colado no fundo.
+      if (alpha > 0.01) {
+        const footY = y + drawH
+        // Mais perto (escala maior) = sombra mais estreita e mais densa.
+        const tightness = clamp01((pose.scale - 0.2) / 0.8)
+        const shadowW = drawW * lerp(0.62, 0.38, tightness)
+        const shadowH = shadowW * 0.17
+
+        const grad = ctx.createRadialGradient(
+          x + drawW / 2, footY, 0,
+          x + drawW / 2, footY, shadowW / 2
+        )
+        const density = lerp(0.3, 0.62, tightness) * alpha
+        grad.addColorStop(0, "rgba(0,0,0," + density.toFixed(3) + ")")
+        grad.addColorStop(0.55, "rgba(0,0,0," + (density * 0.45).toFixed(3) + ")")
+        grad.addColorStop(1, "rgba(0,0,0,0)")
+
+        ctx.save()
+        ctx.translate(x + drawW / 2, footY)
+        ctx.scale(1, shadowH / (shadowW / 2) / 2)
+        ctx.translate(-(x + drawW / 2), -footY)
+        ctx.fillStyle = grad
+        ctx.beginPath()
+        ctx.arc(x + drawW / 2, footY, shadowW / 2, 0, Math.PI * 2)
+        ctx.fill()
+        ctx.restore()
+      }
 
       // Inclinacao proporcional a velocidade do scroll. E sutil (menos de dois
       // graus) mas e o que faz o personagem parecer reagir ao movimento em vez
@@ -278,6 +322,42 @@ export default function CharacterCanvas() {
         ctx.globalAlpha = alpha * glowAmount * breathe * 0.55
         ctx.drawImage(seq.glow, glowX, glowY, glowW, glowH)
         ctx.globalCompositeOperation = "source-over"
+
+        // ---- Feixe de projecao ------------------------------------------
+        // A peca inteira se chama "projetando visao", o personagem tem oculos
+        // que brilham, e ate aqui nao saia NADA deles: a metafora central
+        // estava escrita nos textos e nunca mostrada. O asset ja existia.
+        //
+        // Sai da mesma origem do brilho, entao acompanha o personagem de graca.
+        if (seq.beam && beamAmount > 0.01) {
+          const originX = glowX + glowW / 2
+          const originY = glowY + glowH / 2
+
+          // O quadro projetado fica no centro da tela; o personagem costuma
+          // estar a esquerda nesta cena. O feixe aponta da cabeca para o alvo.
+          const targetX = w / 2
+          const targetY = h * 0.42
+          const dx = targetX - originX
+          const dy = targetY - originY
+          const distance = Math.hypot(dx, dy)
+          const angle = Math.atan2(dy, dx)
+
+          const beamLength = Math.max(distance * 1.15, w * 0.25)
+          const beamHeight = beamLength * 0.52
+
+          ctx.save()
+          ctx.translate(originX, originY)
+          ctx.rotate(angle)
+          // O asset tem o apice a DIREITA e abre para a esquerda; espelhamos no
+          // eixo X para o apice ficar na origem (os oculos) e a abertura no
+          // alvo.
+          ctx.scale(-1, 1)
+          ctx.globalCompositeOperation = "lighter"
+          ctx.globalAlpha = alpha * beamAmount * (0.26 + Math.sin(time / 900) * 0.05)
+          ctx.drawImage(seq.beam, -beamLength, -beamHeight / 2, beamLength, beamHeight)
+          ctx.globalCompositeOperation = "source-over"
+          ctx.restore()
+        }
       }
 
       ctx.globalAlpha = 1
@@ -350,6 +430,11 @@ export default function CharacterCanvas() {
       const pose: Pose = { x: px, y: py, scale: pscale, lean: plean }
       const glowAmount = target.glow
 
+      // O feixe so existe na cena de projecao, e a intensidade e o peso da cena
+      // vezes o brilho dos oculos - entao ele nasce e morre junto com a cena,
+      // sem precisar de limiar proprio.
+      const beamAmount = state.weight.projection * glowAmount
+
       if (blend < 1 && prevState) {
         const outFrame = pickFrame(seq, prevState, prevSequenceTime)
         if (outFrame) {
@@ -363,6 +448,7 @@ export default function CharacterCanvas() {
             h,
             pose,
             glowAmount,
+            beamAmount,
             state.time
           )
         }
@@ -371,7 +457,18 @@ export default function CharacterCanvas() {
       const inFrame = pickFrame(seq, currentState, sequenceTime)
       if (inFrame) {
         const t = blend < 1 ? smootherstep(blend) : 1
-        drawSprite(inFrame, seq, currentState, palpha * t, w, h, pose, glowAmount, state.time)
+        drawSprite(
+          inFrame,
+          seq,
+          currentState,
+          palpha * t,
+          w,
+          h,
+          pose,
+          glowAmount,
+          beamAmount,
+          state.time
+        )
       }
     })
   }, [])
