@@ -1,0 +1,49 @@
+[
+  {
+    "id": "projecting_04",
+    "verdict": "approved",
+    "issues": ""
+  },
+  {
+    "id": "idle_01",
+    "verdict": "redo",
+    "issues": "Cortado na canela, sapatos não aparecem. Cabelo: tranças longas na frente do peito; devem ficar atrás dos ombros. Proporções: idle_01 saiu com pernas minúsculas e torso enorme.",
+    "fixed_prompt": "Photorealistic editorial full-body portrait of the SAME young man in the attached reference photos: identical face, box braids with small silver rings, gathered BEHIND the shoulders: seen from the front only short braid ends at jaw length frame the face, NO braids fall on the chest or in front of the shoulders, sides of the head faded/shaved, large metal ear gauge in the left earlobe, graphite-gray tattoo on the forearm on the viewer's left side of the front view, thin chain bracelet on the opposite wrist. Skin fully in photographic neutral grays like a contemporary sculpture. Plain OVERSIZED boxy dark gray matte T-SHIRT with a simple ROUND CREW NECK (no collar, no buttons), wide dropped sleeves, simple dark gray trousers and dark shoes. Organic fluid frameless glowing white glasses with a subtle white halo. Strong white rim light from behind and above, soft key light. Solid flat pure black background. 85mm lens. FRAMING AND PROPORTIONS (critical): natural realistic adult human proportions, about 7.5 heads tall, LONG legs making up about half of the total height, torso NOT oversized, shoulders normal width; shirt hem ends at the hip, trousers fall long and straight to the shoes. Full body head to shoes, both shoes and floor visible, small black margin above the head and below the feet. Use the attached approved image (projecting_04) ONLY as the guide for body proportions, scale and camera distance, NOT for the pose. 9:16, 8k, minimalist high-fashion sci-fi mood. Standing straight facing the camera, arms relaxed at sides with a slight natural bend, calm neutral expression, inhaling.",
+    "refs": [
+      "prompts/character/masterimages/master.jpg",
+      "workflow/approved/projecting_04.png"
+    ]
+  },
+  {
+    "id": "idle_02",
+    "verdict": "redo",
+    "issues": "Cortado na canela como idle_01 (enquadramento igual, ok), mas surgiu fumaça/vapor perto da boca. Cabelo: tranças longas na frente do peito; devem ficar atrás dos ombros. Proporções: idle_01 saiu com pernas minúsculas e torso enorme.",
+    "fixed_prompt": "Photorealistic editorial full-body portrait of the SAME young man in the attached reference photos: identical face, box braids with small silver rings, gathered BEHIND the shoulders: seen from the front only short braid ends at jaw length frame the face, NO braids fall on the chest or in front of the shoulders, sides of the head faded/shaved, large metal ear gauge in the left earlobe, graphite-gray tattoo on the forearm on the viewer's left side of the front view, thin chain bracelet on the opposite wrist. Skin fully in photographic neutral grays like a contemporary sculpture. Plain OVERSIZED boxy dark gray matte T-SHIRT with a simple ROUND CREW NECK (no collar, no buttons), wide dropped sleeves, simple dark gray trousers and dark shoes. Organic fluid frameless glowing white glasses with a subtle white halo. Strong white rim light from behind and above, soft key light. Solid flat pure black background. 85mm lens. FRAMING AND PROPORTIONS (critical): natural realistic adult human proportions, about 7.5 heads tall, LONG legs making up about half of the total height, torso NOT oversized, shoulders normal width; shirt hem ends at the hip, trousers fall long and straight to the shoes. Full body head to shoes, both shoes and floor visible, small black margin above the head and below the feet. Use the attached approved image (projecting_04) ONLY as the guide for body proportions, scale and camera distance, NOT for the pose. 9:16, 8k, minimalist high-fashion sci-fi mood. IDENTICAL pose, camera distance, scale, framing and lighting as idle_01 (attached as reference), but exhaling: shoulders very slightly lower, head tilted 1 degree to the right. No smoke, vapor or breath effects.",
+    "refs": [
+      "prompts/character/masterimages/master.jpg",
+      "workflow/approved/projecting_04.png",
+      "workflow/inbox/idle_01.png"
+    ]
+  },
+  {
+    "id": "turn_01",
+    "verdict": "redo",
+    "issues": "Camiseta e braços corretos, corpo inteiro ok. Cabelo: referência back.jpg tem tranças longas soltas e lateral raspada; saiu rabo preso. Proporções: idle_01 saiu com pernas minúsculas e torso enorme.",
+    "fixed_prompt": "Photorealistic editorial full-body portrait of the SAME young man in the attached reference photos: identical face, box braids with small silver rings, long braids flowing loosely down the back and over the shoulder like in the back reference photo, sides of the head faded/shaved with visible parting lines, large metal ear gauge in the left earlobe, graphite-gray tattoo on the forearm on the viewer's left side of the front view, thin chain bracelet on the opposite wrist. Skin fully in photographic neutral grays like a contemporary sculpture. Plain OVERSIZED boxy dark gray matte T-SHIRT with a simple ROUND CREW NECK (no collar, no buttons), wide dropped sleeves, simple dark gray trousers and dark shoes. Organic fluid frameless glowing white glasses with a subtle white halo. Strong white rim light from behind and above, soft key light. Solid flat pure black background. 85mm lens. FRAMING AND PROPORTIONS (critical): natural realistic adult human proportions, about 7.5 heads tall, LONG legs making up about half of the total height, torso NOT oversized, shoulders normal width; shirt hem ends at the hip, trousers fall long and straight to the shoes. Full body head to shoes, both shoes and floor visible, small black margin above the head and below the feet. Use the attached approved image (projecting_04) ONLY as the guide for body proportions, scale and camera distance, NOT for the pose. 9:16, 8k, minimalist high-fashion sci-fi mood. Back view, body turned 15 degrees to the right, head turned over the right shoulder looking back, glasses catching rim light on the temples, braids flowing loosely, NOT tied into a ponytail. Tattoo on the arm at the viewer's right, bracelet on the arm at the viewer's left.",
+    "refs": [
+      "prompts/character/masterimages/master.jpg",
+      "workflow/approved/projecting_04.png",
+      "prompts/character/masterimages/back.jpg"
+    ]
+  },
+  {
+    "id": "turn_07",
+    "verdict": "redo",
+    "issues": "Cortado na coxa e maior que os outros; precisa corpo inteiro. Cabelo: tranças longas na frente do peito; devem ficar atrás dos ombros. Proporções: idle_01 saiu com pernas minúsculas e torso enorme.",
+    "fixed_prompt": "Photorealistic editorial full-body portrait of the SAME young man in the attached reference photos: identical face, box braids with small silver rings, gathered BEHIND the shoulders: seen from the front only short braid ends at jaw length frame the face, NO braids fall on the chest or in front of the shoulders, sides of the head faded/shaved, large metal ear gauge in the left earlobe, graphite-gray tattoo on the forearm on the viewer's left side of the front view, thin chain bracelet on the opposite wrist. Skin fully in photographic neutral grays like a contemporary sculpture. Plain OVERSIZED boxy dark gray matte T-SHIRT with a simple ROUND CREW NECK (no collar, no buttons), wide dropped sleeves, simple dark gray trousers and dark shoes. Organic fluid frameless glowing white glasses with a subtle white halo. Strong white rim light from behind and above, soft key light. Solid flat pure black background. 85mm lens. FRAMING AND PROPORTIONS (critical): natural realistic adult human proportions, about 7.5 heads tall, LONG legs making up about half of the total height, torso NOT oversized, shoulders normal width; shirt hem ends at the hip, trousers fall long and straight to the shoes. Full body head to shoes, both shoes and floor visible, small black margin above the head and below the feet. Use the attached approved image (projecting_04) ONLY as the guide for body proportions, scale and camera distance, NOT for the pose. 9:16, 8k, minimalist high-fashion sci-fi mood. Full front view, shoulders squared, direct confident gaze through the glasses, stillness, arms relaxed at sides.",
+    "refs": [
+      "prompts/character/masterimages/master.jpg",
+      "workflow/approved/projecting_04.png"
+    ]
+  }
+]

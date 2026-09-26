@@ -1,0 +1,47 @@
+{
+  "version": 1,
+  "batch": "pilot",
+  "base_prompt": "Photorealistic editorial portrait of the SAME young man shown in the attached reference photos: identical face, box braids with small silver rings, large metal ear gauge in the left earlobe, graphite-gray tattoos on left forearm and wrist, thin chain bracelet on right wrist. Skin rendered fully in photographic neutral grays, like a contemporary sculpture. Oversized boxy dark gray matte shirt with wide dropped sleeves, open collar. He wears organic, fluid, frameless glasses in pure glowing white, lenses forming the frame, subtle white halo on the edges. Strong white rim light from behind and above, soft key light from upper side. Solid flat pure black background. 85mm lens, full body in frame unless stated, centered, 8k, minimalist high-fashion sci-fi mood.",
+  "items": [
+    {
+      "id": "idle_01",
+      "final_path": "app/public/character/frames/idle_01.webp",
+      "aspect": "9:16",
+      "background": "solid black",
+      "refs": ["prompts/character/masterimages/master.jpg", "prompts/character/masterimages/3por4.jpg"],
+      "prompt": "Standing straight facing the camera, weight evenly distributed, arms relaxed at sides with a slight natural bend, hands loose, calm neutral expression, inhaling, shirt settled naturally."
+    },
+    {
+      "id": "idle_02",
+      "final_path": "app/public/character/frames/idle_02.webp",
+      "aspect": "9:16",
+      "background": "solid black",
+      "refs": ["prompts/character/masterimages/master.jpg", "workflow/inbox/idle_01.png"],
+      "prompt": "Same exact pose, camera, framing and lighting as the previous frame idle_01, but exhaling: shoulders very slightly lower, chest relaxed, head tilted 1 degree to the right."
+    },
+    {
+      "id": "turn_01",
+      "final_path": "app/public/character/frames/turn_01.webp",
+      "aspect": "9:16",
+      "background": "solid black",
+      "refs": ["prompts/character/masterimages/back.jpg", "prompts/character/masterimages/master.jpg"],
+      "prompt": "Back view, body turned 15 degrees to the right, head turned over the right shoulder looking back, glasses catching rim light on the temples, braids over the shoulders."
+    },
+    {
+      "id": "turn_07",
+      "final_path": "app/public/character/frames/turn_07.webp",
+      "aspect": "9:16",
+      "background": "solid black",
+      "refs": ["prompts/character/masterimages/master.jpg", "prompts/character/masterimages/3por4.jpg"],
+      "prompt": "Full front view, shoulders squared, direct confident gaze through the glasses, stillness."
+    },
+    {
+      "id": "projecting_04",
+      "final_path": "app/public/character/frames/projecting_04.webp",
+      "aspect": "9:16",
+      "background": "solid black",
+      "refs": ["prompts/character/masterimages/master.jpg", "prompts/character/masterimages/3por4.jpg"],
+      "prompt": "Both arms raised symmetrically at 45 degrees, palms facing forward as if conducting, a beam of white light emitted from the glasses, body leaning slightly back, focused creator pose."
+    }
+  ]
+}

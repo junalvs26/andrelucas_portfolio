@@ -1,0 +1,32 @@
+[
+  {
+    "id": "idle_01",
+    "state": "done",
+    "file": "inbox/idle_01.png",
+    "note": "redo 2"
+  },
+  {
+    "id": "idle_02",
+    "state": "done",
+    "file": "inbox/idle_02.png",
+    "note": "redo 2"
+  },
+  {
+    "id": "turn_01",
+    "state": "failed",
+    "file": "inbox/turn_01.png",
+    "note": "Quota esgotada (429 RESOURCE_EXHAUSTED gemini-3.1-flash-image, reset as 16:34 UTC)"
+  },
+  {
+    "id": "turn_07",
+    "state": "failed",
+    "file": "inbox/turn_07.png",
+    "note": "Quota esgotada (429 RESOURCE_EXHAUSTED gemini-3.1-flash-image, reset as 16:34 UTC)"
+  },
+  {
+    "id": "projecting_04",
+    "state": "done",
+    "file": "inbox/projecting_04.png",
+    "note": "redo 1 (approved)"
+  }
+]

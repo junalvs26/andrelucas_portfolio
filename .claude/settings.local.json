@@ -1,0 +1,24 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(python -)",
+      "Bash(sed -i 's#mesmas refs,#as refs do campo `refs` do feedback \\(se existir; senão as da fila\\),#' PROTOCOL.md)",
+      "Bash(cp approved/projecting_04.png /dev/null)",
+      "mcp__claude_ai_Higgsfield__generate_image",
+      "mcp__claude_ai_Higgsfield__generate_video",
+      "mcp__claude_ai_Higgsfield__media_upload",
+      "Bash(python \"C:/Users/Jr/AppData/Local/Temp/claude/c--Users-Jr-Desktop-Portfolio-Interativo/d0ecb64a-0b77-4140-a15c-983642f71e33/scratchpad/up.py\")",
+      "mcp__claude_ai_Higgsfield__media_confirm",
+      "mcp__claude_ai_Higgsfield__jobs_wait",
+      "Bash(python matte.py test)",
+      "Bash(python -c ' *)",
+      "Bash(curl -s -o C5_lateral.mp4 https://d8j0ntlcm91z4.cloudfront.net/user_3EKEdFE4KH2rDiu7zIHU3IV9kdt/hf_20260926_123118_a88a74be-62a2-4adf-be4a-9cefb61b462d.mp4)",
+      "Bash(mkdir -p raw/C5_lateral)",
+      "Bash(ffmpeg -loglevel error -y -i C5_lateral.mp4 raw/C5_lateral/%03d.png)",
+      "Bash(ffmpeg -loglevel error -y -i C5_lateral.mp4 -vf \"fps=2.4,scale=180:-1,tile=12x1\" -frames:v 1 ../sheet_C5.png)",
+      "Bash(python -m pip install playwright)",
+      "Bash(python -c \"import playwright;print\\('pw ok'\\)\")",
+      "mcp__claude_ai_Higgsfield__models_explore"
+    ]
+  }
+}

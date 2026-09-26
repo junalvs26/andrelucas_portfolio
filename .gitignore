@@ -1,0 +1,28 @@
+# Dependencias
+node_modules/
+
+# Build do Next
+.next/
+.next-verify/
+out/
+*.tsbuildinfo
+next-env.d.ts
+
+# Midia gerada / working dirs pesados.
+# `workflow/hf` e `workflow/reels_axoos` somam ~386M de PNG e MP4 gerados; sao
+# saida de ferramenta, nao codigo, e nao devem entrar no historico do git.
+workflow/hf/
+workflow/reels_axoos/
+workflow/inbox/
+generated/
+
+# Logs e temporarios
+*.log
+build.log
+.DS_Store
+Thumbs.db
+
+# Ambiente
+.env
+.env.local
+.env*.local

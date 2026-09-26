@@ -1,0 +1,166 @@
+/*
+ * Nao ha @import de fonte aqui, de proposito.
+ *
+ * Havia um `@import url(fonts.googleapis.com/...)` nesta posicao. Um @import
+ * numa folha render-blocking torna a requisicao externa render-blocking tambem,
+ * e em serie - o primeiro paint fica esperando uma ida e volta ao Google, o que
+ * se ve como uma tela BRANCA ao abrir a pagina. As fontes agora sao
+ * auto-hospedadas via `next/font` em `app/layout.tsx`.
+ */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --void: #000000;
+  --neon-gray: #888899;
+  --pure-white: #ffffff;
+  --charcoal-100: #2a2a2e;
+  --charcoal-50: #3a3a3e;
+  --skin-dark: #68686e;
+  --skin-mid: #85858b;
+  --skin-light: #9e9ea4;
+
+  /* Curvas de saida usadas nas transicoes que continuam em CSS (hover e
+     estados discretos). Tudo que e dirigido por scroll usa as curvas em
+     `config/scenes.ts`, porque uma transicao CSS sobre um valor que muda todo
+     frame nunca termina de interpolar. */
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-out-quint: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  /* Fundo tambem aqui, nao so no <body>.
+     O <html> e quem pinta o canvas da janela; deixar isso apenas no body
+     dependia da propagacao de background, que so acontece depois do CSS
+     aplicar. Com a regra nos dois, qualquer ordem de carregamento da preto. */
+  background-color: var(--void);
+  color-scheme: dark;
+
+  /* `scroll-behavior: smooth` do navegador briga com o Lenis: os dois tentam
+     animar a mesma posicao de scroll e o resultado e um empurra-empurra. */
+  scroll-behavior: auto;
+  overflow-x: hidden;
+  /* Evita o "rubber band" do iOS puxando a pagina inteira durante a inercia. */
+  overscroll-behavior-y: none;
+}
+
+body {
+  background-color: var(--void);
+  color: var(--pure-white);
+  /* As variaveis vem do `next/font` no layout; os nomes literais ficam como
+     fallback para o caso de a fonte auto-hospedada nao ter carregado ainda. */
+  font-family: var(--font-jetbrains-mono), var(--font-space-mono), 'JetBrains Mono',
+    ui-monospace, monospace;
+  font-size: 16px;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow-x: hidden;
+  cursor: none;
+}
+
+::selection {
+  background-color: var(--pure-white);
+  color: var(--void);
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+@layer components {
+  .mono-text {
+    @apply font-mono;
+  }
+
+  .projected-text {
+    @apply font-mono text-pureWhite;
+    /* Halo em duas camadas: um proximo e nitido, outro largo e frio. E o que
+       faz o texto ler como luz projetada em vez de texto branco. */
+    text-shadow:
+      0 0 14px rgba(255, 255, 255, 0.35),
+      0 0 46px rgba(136, 136, 153, 0.18);
+  }
+
+  .scanline-overlay {
+    position: relative;
+  }
+  .scanline-overlay::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    /*
+     * Periodo de 6px, nao 4px, e com bordas suaves em vez de degraus duros.
+     *
+     * Um padrao de 2px sobre elementos que estao sendo escalados por transform
+     * (os quadros da projecao e os cards da galeria) e reamostrado a cada frame
+     * numa fase diferente: em periodo de 2px isso bate no limite de resolucao da
+     * tela e produz moire visivel - faixas grossas que andam sozinhas. Em 6px com
+     * transicao suave o padrao continua legivel e para de batalhar com a grade
+     * de pixels.
+     */
+    background: repeating-linear-gradient(
+      0deg,
+      transparent 0px,
+      rgba(255, 255, 255, 0.022) 2px,
+      rgba(255, 255, 255, 0.022) 3px,
+      transparent 5px,
+      transparent 6px
+    );
+    pointer-events: none;
+    /* `translateY(100%)` deslocava a camada inteira para fora do elemento e a
+       primeira metade do ciclo ficava vazia. O deslocamento tem que ser
+       exatamente um periodo do padrao para o loop ser continuo e invisivel. */
+    animation: scanline-drift 2.4s linear infinite;
+    z-index: 2;
+  }
+}
+
+@keyframes scanline-drift {
+  from {
+    transform: translate3d(0, 0, 0);
+  }
+  to {
+    /* Um periodo exato do gradiente acima. */
+    transform: translate3d(0, 6px, 0);
+  }
+}
+
+@media (pointer: coarse) {
+  body {
+    cursor: auto;
+  }
+}
+
+@media (max-width: 768px) {
+  html {
+    font-size: 14px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
