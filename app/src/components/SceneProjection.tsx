@@ -108,7 +108,18 @@ export default function SceneProjection({
         const offset = (i - cursor) * 26
         el.style.transform =
           "translate3d(" + offset.toFixed(2) + "px,0,0) scale(" + scale.toFixed(4) + ")"
-        el.style.visibility = value > 0.0015 ? "visible" : "hidden"
+        /*
+          String vazia = remover a declaracao inline, para o quadro HERDAR a
+          visibilidade da camada da cena. Nunca "visible".
+
+          `visibility` e herdada, e um descendente com `visible` explicito
+          aparece mesmo dentro de um ancestral `hidden` - e a unica propriedade
+          de ocultacao que funciona assim. Com "visible" aqui, o ultimo quadro
+          em foco continuava pintado depois que a projecao saia de cena, por
+          cima do que viesse depois. Era o video que "descia junto e parava em
+          cima dos links".
+        */
+        el.style.visibility = value > 0.0015 ? "" : "hidden"
       }
 
       const nearest = Math.round(cursor)

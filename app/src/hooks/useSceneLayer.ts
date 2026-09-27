@@ -104,6 +104,25 @@ export function useSceneLayer<T extends HTMLElement>(
         el.style.willChange = visible ? "opacity, transform, filter" : "auto"
       }
       if (!visible) {
+        /*
+          Zerar a opacidade ao sumir, nao so esconder.
+
+          O `return` abaixo pula a escrita de opacidade, entao a camada ficava
+          guardando o ultimo valor escrito. Em rolagem lenta isso e inofensivo
+          (o ultimo valor era ~0.0015), mas num celular com queda de quadros o
+          peso salta de, digamos, 0.6 direto para 0 entre dois frames: a camada
+          congela com `opacity: 0.6` e so `visibility: hidden` segurando ela.
+
+          Isso importa porque `visibility` e HERDADA e um filho pode
+          sobrescreve-la (ver a correcao em SceneProjection). Bastava um filho
+          declarar `visible` para a camada inteira reaparecer, com 60% de
+          opacidade, sobre a cena seguinte. Com a opacidade em 0 nao ha o que
+          reaparecer, independentemente do que os filhos facam.
+        */
+        if (lastOpacity !== 0) {
+          el.style.opacity = "0"
+          lastOpacity = 0
+        }
         if (interactive) {
           interactive = false
           setInteractive(el, false)

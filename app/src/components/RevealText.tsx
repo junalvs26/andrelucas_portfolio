@@ -75,8 +75,10 @@ export default function RevealText({
         }
         return
       }
-      if (root.style.visibility !== "visible") {
-        root.style.visibility = "visible"
+      // "" e nao "visible": herda da camada da cena. Ver a nota em
+      // SceneProjection sobre `visibility` herdada.
+      if (root.style.visibility !== "") {
+        root.style.visibility = ""
         root.style.willChange = "opacity, transform"
       }
 
