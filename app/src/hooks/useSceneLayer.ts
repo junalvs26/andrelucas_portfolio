@@ -20,14 +20,33 @@ export interface SceneLayerOptions {
   /** Opacidade maxima da camada. */
   maxOpacity?: number
   /**
-   * Libera eventos de ponteiro quando a camada esta praticamente cheia.
-   * Fica desligado por padrao: uma camada a 20% de opacidade nao deve
-   * interceptar cliques destinados a cena que esta entrando.
+   * Libera eventos de ponteiro E foco de teclado quando a camada esta
+   * praticamente cheia. Fica desligado por padrao: uma camada a 20% de
+   * opacidade nao deve interceptar cliques destinados a cena que esta entrando.
+   *
+   * Alem de `pointer-events`, alterna o atributo `inert`. Sem ele, os botoes
+   * das cinco cenas ficariam todos na ordem de tabulacao ao mesmo tempo: Tab
+   * levaria o foco para um botao invisivel de outra cena, e a pagina rolaria
+   * sozinha atras do foco. `pointer-events` sozinho nao resolve isso - ele nao
+   * tem efeito nenhum sobre o teclado.
    */
   interactive?: boolean
 }
 
 const EPS = 0.0015
+
+/**
+ * Liga/desliga ponteiro e foco de uma camada de cena.
+ *
+ * `inert` e removido quando a camada esta ativa, nao definido como `false`:
+ * como todo atributo booleano do HTML, `inert="false"` continua ativando o
+ * comportamento.
+ */
+function setInteractive(el: HTMLElement, on: boolean) {
+  el.style.pointerEvents = on ? "auto" : "none"
+  if (on) el.removeAttribute("inert")
+  else el.setAttribute("inert", "")
+}
 
 /**
  * Compoe uma camada de cena a partir do peso da cena no store de movimento.
@@ -68,6 +87,10 @@ export function useSceneLayer<T extends HTMLElement>(
     el.style.visibility = "hidden"
     el.style.transformOrigin = "50% 50%"
     el.style.backfaceVisibility = "hidden"
+    // Estado inicial coerente com `opacity: 0`: uma camada invisivel no
+    // primeiro frame nao pode ser clicavel nem tabulavel enquanto o primeiro
+    // commit do store nao chegou.
+    if (optsRef.current.interactive) setInteractive(el, false)
 
     return subscribeMotion((state) => {
       const o = optsRef.current
@@ -83,15 +106,25 @@ export function useSceneLayer<T extends HTMLElement>(
       if (!visible) {
         if (interactive) {
           interactive = false
-          el.style.pointerEvents = "none"
+          setInteractive(el, false)
         }
         return
       }
 
-      const shouldInteract = Boolean(o.interactive) && w > 0.65
+      /*
+        Limiar 0.35, nao 0.65.
+
+        Quem manda agora e o `interactive` que a cena passa (ela usa o mesmo
+        `activeSceneId` que decide mostrar o botao); este peso e so uma rede de
+        seguranca contra uma camada quase transparente receber clique. Em 0.65
+        havia uma faixa de rolagem em que a cena JA era a dominante - botao
+        visivel - e o peso ainda nao tinha chegado ao limiar: o botao aparecia e
+        nao clicava. Essa faixa morta era o bug.
+      */
+      const shouldInteract = Boolean(o.interactive) && w > 0.35
       if (shouldInteract !== interactive) {
         interactive = shouldInteract
-        el.style.pointerEvents = interactive ? "auto" : "none"
+        setInteractive(el, interactive)
       }
 
       // Curva de entrada separada da opacidade: a opacidade sobe linear com o

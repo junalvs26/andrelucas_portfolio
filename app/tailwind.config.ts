@@ -1,10 +1,33 @@
 import type { Config } from 'tailwindcss'
 
 const config: Config = {
+  /*
+    `src/config` PRECISA estar aqui.
+
+    O Tailwind gera CSS varrendo estes arquivos atras de strings que pareçam
+    classes - ele nao entende o codigo, so procura texto. E `ASPECT_CLASSES`,
+    o mapa que da a proporcao de cada projeto, mora em `src/config/projects.ts`,
+    que ficou de fora desta lista.
+
+    Resultado: `aspect-[9/16]` e `aspect-square` nunca eram geradas. As classes
+    iam para o HTML e nao existiam no CSS, entao os elementos ficavam sem
+    `aspect-ratio` - e como cada um deles tira UMA das duas dimensoes dela, todos
+    colapsavam:
+
+      - cards da galeria: largura 260px, altura 0
+      - quadro da projecao: altura 64vh, largura 0
+      - player do lightbox: largura do shell, altura 0
+        (dai o sintoma "toca o audio e nao aparece imagem")
+
+    Qualquer arquivo fora de `components`/`app` que monte nome de classe precisa
+    entrar nesta lista, senao o sintoma reaparece - e ele nao quebra o build nem
+    o type-check, so some da tela.
+  */
   content: [
     './src/pages/**/*.{js,ts,jsx,tsx,mdx}',
     './src/components/**/*.{js,ts,jsx,tsx,mdx}',
     './src/app/**/*.{js,ts,jsx,tsx,mdx}',
+    './src/config/**/*.{js,ts}',
   ],
   theme: {
     extend: {

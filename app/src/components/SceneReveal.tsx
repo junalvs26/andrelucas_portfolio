@@ -24,7 +24,7 @@ export default function SceneReveal() {
       <div className="absolute bottom-[12vh] left-[6vw] max-w-[85vw]">
         <RevealText
           as="h1"
-          text="VIDEO EDITOR"
+          text="ANDRÉ LUCAS"
           sceneId="reveal"
           from={0.06}
           to={0.52}
@@ -33,7 +33,7 @@ export default function SceneReveal() {
           className="projected-text text-4xl font-light leading-none tracking-[0.18em] md:text-6xl lg:text-8xl"
         />
         <RevealText
-          text="VISUAL STORYTELLER"
+          text="EDITOR"
           sceneId="reveal"
           from={0.3}
           to={0.72}

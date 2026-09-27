@@ -9,9 +9,9 @@
  * ---------------------------------------------------------------------------
  * COMO ADICIONAR OS VIDEOS
  * ---------------------------------------------------------------------------
- * 1. Coloque os arquivos em `app/public/projects/<pasta>/`.
- * 2. Ajuste `video` e `poster` abaixo para o nome exato do arquivo.
- * 3. Pronto - nao precisa mexer em nenhum componente.
+ * 1. Rode `./scripts/import-videos.ps1 -Id <id> -Source <master.mp4>`. Ele le
+ *    os caminhos daqui de baixo e escreve o loop e o poster no lugar certo.
+ * 2. Pronto - nao precisa mexer em nenhum componente nem editar caminho.
  *
  * Formato recomendado: `.webm` (VP9) com um `.mp4` (H.264) do mesmo nome ao
  * lado, para Safari. O componente `ProjectMedia` tenta o `.webm` e cai
@@ -20,6 +20,20 @@
  *
  * O poster e obrigatorio e aparece sempre: e ele que compoe o quadro enquanto o
  * video carrega, e e o estado final se o video nao existir.
+ *
+ * ---------------------------------------------------------------------------
+ * O VIDEO LOCAL NAO E O TRABALHO - E A CAPA DELE
+ * ---------------------------------------------------------------------------
+ * `ProjectMedia` monta o <video> com `loop muted playsInline` e sem controles:
+ * o arquivo local existe para dar movimento ao quadro enquanto a pessoa rola.
+ * Por isso ele deve ser um trecho curto (6-10s), sem audio, 720p - algo em
+ * torno de 500 KB. Subir o master aqui nao melhora nada visivelmente e custa
+ * dezenas de MB no bundle estatico.
+ *
+ * Para o visitante ASSISTIR o trabalho de verdade, com audio e em qualidade
+ * cheia, preencha `youtubeId`. O quadro passa a ser clicavel e abre o
+ * `ProjectLightbox`, que cria o <iframe> apenas no clique - antes disso a
+ * pagina nao baixa um byte do YouTube.
  */
 
 export interface Project {
@@ -34,97 +48,145 @@ export interface Project {
   video: string
   /** Caminho a partir de `public/`. Sempre visivel. */
   poster: string
+  /**
+   * ID do video no YouTube (o que vem depois de `v=`), nao a URL inteira.
+   * Preenchido: o quadro fica clicavel e abre o player no lightbox.
+   * Vazio: o quadro segue sendo so o loop, sem afordancia de clique.
+   * Videos "nao listados" funcionam aqui - eles nao aparecem em busca, mas
+   * tocam por embed.
+   */
+  youtubeId?: string
 }
 
-/** Cena 03 - projecao em tela cheia. Trabalhos comerciais. */
+/**
+ * TODO O ACERVO E VERTICAL.
+ *
+ * Os 17 masters entregues sao 9:16 (a maioria em 2160x3840), porque o trabalho
+ * e social: Reels, Shorts, TikTok. A lista anterior descrevia quatro
+ * "comerciais 16:9", dois "eventos" e um "corporativo" - era andaime de
+ * desenvolvimento, nao o acervo. Por isso `aspect` e "9:16" em todos os itens
+ * abaixo, e a cena de projecao passou a dimensionar o quadro pela ALTURA.
+ *
+ * Os `youtubeId` sao Shorts. Um Short toca no embed normal do YouTube, que e o
+ * que o `ProjectLightbox` usa - nao existe (e nao e preciso) embed especifico
+ * de Short.
+ */
+
+/** Cena 03 - projecao em tela cheia. Os quatro destaques. */
 export const COMMERCIAL_PROJECTS: Project[] = [
   {
-    id: "comercial-01",
-    title: "COMERCIAL 01",
-    category: "TV / DIGITAL",
-    duration: "0:30",
-    aspect: "16:9",
-    video: "/projects/comerciais/proj_comercial_01.webm",
-    poster: "/projects/comerciais/thumb_comercial_01.webp",
+    id: "mara-selfit",
+    title: "MARA SELFIT",
+    category: "REELS / FITNESS",
+    duration: "0:52",
+    aspect: "9:16",
+    video: "/projects/mara-selfit.webm",
+    poster: "/projects/mara-selfit.webp",
+    youtubeId: "4wq5yJQY7nU",
   },
   {
-    id: "comercial-02",
-    title: "COMERCIAL 02",
-    category: "BRAND FILM",
-    duration: "1:15",
-    aspect: "16:9",
-    video: "/projects/comerciais/proj_comercial_02.webm",
-    poster: "/projects/comerciais/thumb_comercial_02.webp",
+    id: "taping",
+    title: "TAPING",
+    category: "REELS / SAUDE",
+    duration: "1:06",
+    aspect: "9:16",
+    video: "/projects/taping.webm",
+    poster: "/projects/taping.webp",
+    youtubeId: "hd9i8m7ny1Y",
   },
   {
-    id: "comercial-03",
-    title: "COMERCIAL 03",
-    category: "PRODUCT LAUNCH",
-    duration: "0:45",
-    aspect: "16:9",
-    video: "/projects/comerciais/proj_comercial_03.webm",
-    poster: "/projects/comerciais/thumb_comercial_03.webp",
+    id: "emagrecimento",
+    title: "EMAGRECIMENTO E ACOMPANHAMENTO",
+    category: "REELS / SAUDE",
+    duration: "0:52",
+    aspect: "9:16",
+    video: "/projects/emagrecimento.webm",
+    poster: "/projects/emagrecimento.webp",
+    youtubeId: "vdpAHltu0GA",
   },
   {
-    id: "comercial-04",
-    title: "COMERCIAL 04",
-    category: "CAMPANHA INSTITUCIONAL",
-    duration: "1:00",
-    aspect: "16:9",
-    video: "/projects/comerciais/proj_comercial_04.webm",
-    poster: "/projects/comerciais/thumb_comercial_04.webp",
+    id: "experiencia-zed",
+    title: "EXPERIENCIA ZED",
+    category: "REELS / MARCA",
+    duration: "0:31",
+    aspect: "9:16",
+    video: "/projects/experiencia-zed.webm",
+    poster: "/projects/experiencia-zed.webp",
+    youtubeId: "UXmMHGHrLPA",
   },
 ]
 
-/** Cena 04 - galeria lateral. Redes sociais, eventos, corporativo. */
+/** Cena 04 - galeria lateral. O resto do acervo publicado. */
 export const GALLERY_PROJECTS: Project[] = [
   {
-    id: "social-01",
-    title: "REDES SOCIAIS 01",
-    category: "REELS / TIKTOK",
+    id: "qball",
+    title: "QBALL CERVEJA",
+    category: "REELS / BEBIDAS",
+    duration: "0:25",
     aspect: "9:16",
-    video: "/projects/social/proj_social_01.webm",
-    poster: "/projects/social/thumb_social_01.webp",
+    video: "/projects/qball.webm",
+    poster: "/projects/qball.webp",
+    youtubeId: "gfbs688FZmM",
   },
   {
-    id: "social-02",
-    title: "REDES SOCIAIS 02",
-    category: "STORIES / ADS",
+    id: "quarta-em-dobro",
+    title: "QUARTA EM DOBRO",
+    category: "REELS / PROMOCAO",
+    duration: "0:24",
     aspect: "9:16",
-    video: "/projects/social/proj_social_02.webm",
-    poster: "/projects/social/thumb_social_02.webp",
+    video: "/projects/quarta-em-dobro.webm",
+    poster: "/projects/quarta-em-dobro.webp",
+    youtubeId: "XKy2R6gAlUE",
   },
   {
-    id: "social-03",
-    title: "REDES SOCIAIS 03",
-    category: "CARROSSEL VIDEO",
-    aspect: "1:1",
-    video: "/projects/social/proj_social_03.webm",
-    poster: "/projects/social/thumb_social_03.webp",
+    id: "trend-zed",
+    title: "TREND ZED",
+    category: "REELS / TREND",
+    duration: "0:21",
+    aspect: "9:16",
+    video: "/projects/trend-zed.webm",
+    poster: "/projects/trend-zed.webp",
+    youtubeId: "wAFNGlF-XC4",
   },
   {
-    id: "event-01",
-    title: "EVENTO 01",
-    category: "AFTERMOVIE",
-    aspect: "16:9",
-    video: "/projects/eventos/proj_event_01.webm",
-    poster: "/projects/eventos/thumb_event_01.webp",
+    id: "petitfour",
+    title: "PETITFOUR",
+    category: "REELS / GASTRONOMIA",
+    duration: "0:32",
+    aspect: "9:16",
+    video: "/projects/petitfour.webm",
+    poster: "/projects/petitfour.webp",
+    youtubeId: "AosG6_kr3Do",
   },
   {
-    id: "event-02",
-    title: "EVENTO 02",
-    category: "COBERTURA AO VIVO",
-    aspect: "16:9",
-    video: "/projects/eventos/proj_event_02.webm",
-    poster: "/projects/eventos/thumb_event_02.webp",
+    id: "salao-v3",
+    title: "SALAO V3",
+    category: "REELS / BELEZA",
+    duration: "0:43",
+    aspect: "9:16",
+    video: "/projects/salao-v3.webm",
+    poster: "/projects/salao-v3.webp",
+    youtubeId: "8MFN7YzK4Xo",
   },
   {
-    id: "corp-01",
-    title: "CORPORATIVO 01",
-    category: "INSTITUCIONAL",
-    aspect: "16:9",
-    video: "/projects/corporativo/proj_corp_01.webm",
-    poster: "/projects/corporativo/thumb_corp_01.webp",
+    id: "volta-as-aulas",
+    title: "VOLTA AS AULAS",
+    category: "REELS / OTICA",
+    duration: "0:17",
+    aspect: "9:16",
+    video: "/projects/volta-as-aulas.webm",
+    poster: "/projects/volta-as-aulas.webp",
+    youtubeId: "98zbDXzBv2A",
+  },
+  {
+    id: "corte-live",
+    title: "CORTE LIVE",
+    category: "CORTE / LIVE",
+    duration: "0:30",
+    aspect: "9:16",
+    video: "/projects/corte-live.webm",
+    poster: "/projects/corte-live.webp",
+    youtubeId: "3_3gYjehSv4",
   },
 ]
 

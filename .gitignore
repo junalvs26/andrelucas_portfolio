@@ -26,3 +26,18 @@ Thumbs.db
 .env
 .env.local
 .env*.local
+
+# Masters dos videos (~3.1 GB).
+# `portfolio 1/` e `portfolio 2/` sao os arquivos originais entregues pelo
+# cliente, em 2160x3840. O site NAO os usa: `scripts/import-videos.ps1` gera a
+# partir deles os loops de ~500 KB em `app/public/projects/`, e esses sim sao
+# versionados. Os masters ficam fora do historico - o GitHub rejeita arquivo
+# acima de 100 MB, e aqui ha dezesseis deles.
+# O padrao cobre a pasta E o .zip: existem os dois na raiz, e uma regra so com
+# barra no fim ("portfolio 1/") casa apenas com o diretorio - foi assim que
+# 3.3 GB de zip quase entraram no historico.
+portfolio 1*
+portfolio 2*
+
+# Qualquer entrega futura de master, no mesmo espirito.
+*.zip

@@ -10,20 +10,22 @@ const CONTACTS = [
   {
     icon: "MAIL",
     label: "EMAIL",
-    value: "contato@dominio.com",
-    action: "mailto:contato@dominio.com",
+    value: "andreluck001@gmail.com",
+    action: "mailto:andreluck001@gmail.com",
   },
   {
     icon: "IG",
     label: "INSTAGRAM",
-    value: "@usuario",
-    action: "https://instagram.com/usuario",
+    value: "@_oded.edits",
+    action: "https://instagram.com/_oded.edits",
   },
   {
     icon: "WA",
     label: "WHATSAPP",
-    value: "+55 00 00000-0000",
-    action: "https://wa.me/5500000000000",
+    value: "+55 98 98536-1399",
+    // `wa.me` exige o numero so com digitos e COM o codigo do pais (55).
+    // Sem o 55 o link abre uma conversa com um numero de outro pais ou falha.
+    action: "https://wa.me/5598985361399",
   },
 ]
 

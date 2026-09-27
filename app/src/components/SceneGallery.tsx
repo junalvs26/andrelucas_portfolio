@@ -3,17 +3,33 @@
 import { useEffect, useRef, useState } from "react"
 import ProjectMedia from "@/components/ProjectMedia"
 import RevealText from "@/components/RevealText"
-import { ASPECT_CLASSES, GALLERY_PROJECTS } from "@/config/projects"
+import { ASPECT_CLASSES, GALLERY_PROJECTS, type Project } from "@/config/projects"
 import { clamp01, lerp, smootherstep } from "@/config/scenes"
 import { subscribeMotion } from "@/lib/motion"
 import { useSceneLayer } from "@/hooks/useSceneLayer"
 
-const CARD_WIDTH = 320
+/*
+  260px, nao 320.
+
+  O acervo virou todo 9:16: a 320px de largura o card tem 569px de altura, e
+  ancorado em `bottom-[14vh]` ele passava do topo da viewport em qualquer
+  notebook de 768px de altura. A 260px sao 462px - cabe, e ainda entra um card
+  a mais no percurso horizontal.
+*/
+const CARD_WIDTH = 260
 const GAP = 28
 const STRIDE = CARD_WIDTH + GAP
 
 interface SceneGalleryProps {
   activeSceneId: string
+  /** Abre o trabalho completo. Chamado so por card com `youtubeId`. */
+  onOpenProject: (project: Project) => void
+  /**
+   * Lightbox aberto. Os loops sao pausados enquanto isso: seis videos
+   * decodificando atras de um modal opaco gastam o mesmo frame que o player
+   * precisa para comecar.
+   */
+  lightboxOpen: boolean
 }
 
 /**
@@ -36,15 +52,30 @@ interface SceneGalleryProps {
  *    frame nunca termina - ela reinicia a interpolacao continuamente, e o
  *    resultado e exatamente a sensacao de arrasto emborrachado.
  */
-export default function SceneGallery({ activeSceneId }: SceneGalleryProps) {
+export default function SceneGallery({
+  activeSceneId,
+  onOpenProject,
+  lightboxOpen,
+}: SceneGalleryProps) {
+  const active = activeSceneId === "gallery"
+
   const layerRef = useSceneLayer<HTMLDivElement>("gallery", {
     yFrom: 40,
     blurFrom: 8,
+    /*
+      `interactive: active`, nao `true`.
+
+      Com `true` o hook decidia sozinho por `weight > 0.65` - um limiar que nao
+      coincide exatamente com o `active` que decide MOSTRAR o botao. Dava uma
+      faixa de rolagem em que o "ASSISTIR" estava visivel e a camada ainda nao
+      recebia ponteiro: o botao aparecia e nao clicava. Agora os dois usam o
+      mesmo criterio.
+    */
+    interactive: active,
   })
 
   const trackRef = useRef<HTMLDivElement>(null)
   const [focused, setFocused] = useState(0)
-  const active = activeSceneId === "gallery"
 
   useEffect(() => {
     const track = trackRef.current
@@ -120,48 +151,103 @@ export default function SceneGallery({ activeSceneId }: SceneGalleryProps) {
   }, [])
 
   return (
-    <div ref={layerRef} className="absolute inset-0" aria-hidden="true">
+    /*
+      Sem `aria-hidden` aqui: a camada deixou de ser puramente decorativa no
+      momento em que os cards viraram botoes. Um controle dentro de uma subarvore
+      `aria-hidden` e invisivel para leitor de tela mas continua clicavel e
+      focavel - o pior dos dois mundos. As sobreposicoes decorativas de dentro
+      seguem marcadas individualmente.
+    */
+    <div ref={layerRef} className="absolute inset-0">
       <div className="absolute bottom-[14vh] left-0 w-full overflow-hidden">
         <div
           ref={trackRef}
           className="flex items-end will-change-transform"
           style={{ gap: GAP + "px", paddingLeft: "6vw", paddingRight: "6vw" }}
         >
-          {GALLERY_PROJECTS.map((proj, i) => (
-            <article
-              key={proj.id}
-              data-card
-              className={
-                "relative flex-shrink-0 " + (ASPECT_CLASSES[proj.aspect] ?? "aspect-video")
-              }
-              style={{
-                width: CARD_WIDTH + "px",
-                // Sem `transition`: o valor e dirigido pelo scroll e reescrito
-                // a cada frame, ja no seu valor final.
-                willChange: "transform, opacity, filter",
-                transformOrigin: "50% 100%",
-              }}
-            >
-              <ProjectMedia
-                videoSrc={proj.video}
-                poster={proj.poster}
-                title={proj.title}
-                active={active && Math.abs(focused - i) <= 1}
-                className="h-full w-full rounded-[3px]"
-              />
+          {GALLERY_PROJECTS.map((proj, i) => {
+            const playable = Boolean(proj.youtubeId)
+            // So o card em foco recebe o clique. Os vizinhos estao a 35% de
+            // opacidade e desfocados: clicar num deles seria sempre acidente.
+            const clickable = playable && active && focused === i
 
-              <div className="pointer-events-none absolute inset-0 rounded-[3px] border border-pureWhite/20" />
-              <div className="scanline-overlay pointer-events-none absolute inset-0 rounded-[3px]" />
-              <div className="pointer-events-none absolute inset-0 rounded-[3px] bg-gradient-to-t from-void/85 via-void/10 to-transparent" />
+            return (
+              <article
+                key={proj.id}
+                data-card
+                className={
+                  "relative flex-shrink-0 " + (ASPECT_CLASSES[proj.aspect] ?? "aspect-video")
+                }
+                style={{
+                  width: CARD_WIDTH + "px",
+                  // Sem `transition`: o valor e dirigido pelo scroll e reescrito
+                  // a cada frame, ja no seu valor final.
+                  willChange: "transform, opacity, filter",
+                  transformOrigin: "50% 100%",
+                }}
+              >
+                <ProjectMedia
+                  videoSrc={proj.video}
+                  poster={proj.poster}
+                  title={proj.title}
+                  active={active && !lightboxOpen && Math.abs(focused - i) <= 1}
+                  className="h-full w-full rounded-[3px]"
+                />
 
-              <div className="pointer-events-none absolute bottom-4 left-4 right-4 projected-text mono-text">
-                <p className="mb-1 text-[0.55rem] tracking-[0.35em] text-neonGray">
-                  {proj.category}
-                </p>
-                <p className="truncate text-xs font-light tracking-[0.25em]">{proj.title}</p>
-              </div>
-            </article>
-          ))}
+                <div className="pointer-events-none absolute inset-0 rounded-[3px] border border-pureWhite/20" />
+                <div className="scanline-overlay pointer-events-none absolute inset-0 rounded-[3px]" />
+                <div className="pointer-events-none absolute inset-0 rounded-[3px] bg-gradient-to-t from-void/85 via-void/10 to-transparent" />
+
+                <div className="pointer-events-none absolute bottom-4 left-4 right-4 projected-text mono-text">
+                  <p className="mb-1 text-[0.55rem] tracking-[0.35em] text-neonGray">
+                    {proj.category}
+                  </p>
+                  <p className="truncate text-xs font-light tracking-[0.25em]">{proj.title}</p>
+                </div>
+
+                {/*
+                  O botao cobre o card inteiro e fica acima das sobreposicoes.
+                  Projeto sem `youtubeId` nao ganha botao nenhum: uma afordancia
+                  de play que nao abre nada e pior do que nao ter afordancia.
+                */}
+                {playable && (
+                  <button
+                    type="button"
+                    onClick={() => onOpenProject(proj)}
+                    tabIndex={clickable ? 0 : -1}
+                    aria-label={"Assistir " + proj.title}
+                    className="group absolute inset-0 z-10 flex items-center justify-center rounded-[3px] focus:outline-none focus-visible:ring-1 focus-visible:ring-pureWhite"
+                    style={{
+                      /*
+                        `pointer-events` explicito no proprio botao.
+
+                        O palco e `pointer-events-none` e `pointer-events` e uma
+                        propriedade HERDADA: sem um `auto` proprio, o botao
+                        dependia de a camada da cena ter reativado o ponteiro no
+                        ancestral. Declarar aqui torna o alvo de clique
+                        independente da composicao das cenas - um descendente com
+                        `auto` e clicavel mesmo sob um ancestral `none`.
+                      */
+                      pointerEvents: clickable ? "auto" : "none",
+                      cursor: "none",
+                    }}
+                  >
+                    <span
+                      className="mono-text border border-pureWhite/40 px-4 py-2 text-[0.5rem] tracking-[0.35em] text-pureWhite/80 backdrop-blur-[2px] transition-all duration-500 ease-out group-hover:border-pureWhite group-hover:text-pureWhite"
+                      style={{
+                        // A afordancia aparece so no card em foco. Nos vizinhos
+                        // desfocados ela viraria ruido visual.
+                        opacity: clickable ? 1 : 0,
+                        transition: "opacity 500ms cubic-bezier(0.22, 1, 0.36, 1)",
+                      }}
+                    >
+                      ASSISTIR
+                    </span>
+                  </button>
+                )}
+              </article>
+            )
+          })}
         </div>
       </div>
 

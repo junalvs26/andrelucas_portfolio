@@ -142,6 +142,21 @@ body {
   }
 }
 
+/* Entrada do lightbox de projeto. Opacidade + um passo curto de escala: o
+   modal precisa ler como "veio da frente", mas qualquer coisa acima de ~320ms
+   entre o clique e o player pronto parece atraso, nao transicao.
+   O bloco de prefers-reduced-motion no fim do arquivo zera isso. */
+@keyframes lightboxIn {
+  from {
+    opacity: 0;
+    transform: scale(0.985);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
 @media (pointer: coarse) {
   body {
     cursor: auto;

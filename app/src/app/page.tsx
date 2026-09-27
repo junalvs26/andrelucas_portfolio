@@ -1,5 +1,6 @@
 'use client'
 
+import { useCallback, useState } from 'react'
 import AtmosphereLayers from '@/components/AtmosphereLayers'
 import CharacterCanvas from '@/components/CharacterCanvas'
 import SceneBackdrop from '@/components/SceneBackdrop'
@@ -14,6 +15,8 @@ import ScanlineOverlay from '@/components/ScanlineOverlay'
 import Vignette from '@/components/Vignette'
 import ScrollHint from '@/components/ScrollHint'
 import SceneChrome from '@/components/SceneChrome'
+import ProjectLightbox from '@/components/ProjectLightbox'
+import type { Project } from '@/config/projects'
 import { useLenisScroll } from '@/hooks/useLenisScroll'
 
 export default function PortfolioPage() {
@@ -21,6 +24,23 @@ export default function PortfolioPage() {
   // na pagina inteira. Todo o resto do movimento passa pelo store em
   // `lib/motion` e escreve direto no DOM.
   const { currentSceneId } = useLenisScroll()
+
+  /*
+    Projeto aberto no lightbox.
+
+    Este estado pode viver no React, ao contrario de tudo o que e movimento:
+    ele muda por clique - algumas vezes na visita inteira -, nao por frame. A
+    regra do store em `lib/motion` e sobre o que muda a 120 Hz, e um modal que
+    abre e fecha nao e isso.
+  */
+  const [openProject, setOpenProject] = useState<Project | null>(null)
+
+  // Identidade estavel: `SceneGallery` e `SceneProjection` recebem esta funcao
+  // como prop, e uma nova referencia a cada render invalidaria memoizacao de
+  // graca no caminho mais sensivel da pagina.
+  const closeProject = useCallback(() => setOpenProject(null), [])
+
+  const lightboxOpen = openProject !== null
 
   return (
     <div className="relative w-full">
@@ -53,8 +73,16 @@ export default function PortfolioPage() {
               a rolar. */}
           <SceneIntro />
           <SceneReveal />
-          <SceneProjection activeSceneId={currentSceneId} />
-          <SceneGallery activeSceneId={currentSceneId} />
+          <SceneProjection
+            activeSceneId={currentSceneId}
+            onOpenProject={setOpenProject}
+            lightboxOpen={lightboxOpen}
+          />
+          <SceneGallery
+            activeSceneId={currentSceneId}
+            onOpenProject={setOpenProject}
+            lightboxOpen={lightboxOpen}
+          />
           <SceneProcess />
           <ContactHub />
         </div>
@@ -64,6 +92,10 @@ export default function PortfolioPage() {
         <Vignette />
         <ScanlineOverlay />
       </div>
+
+      {/* Fora do palco `pointer-events-none` e depois dele no DOM: o lightbox
+          precisa receber cliques e cobrir todas as camadas de cena. */}
+      <ProjectLightbox project={openProject} onClose={closeProject} />
 
       <CustomCursor />
     </div>

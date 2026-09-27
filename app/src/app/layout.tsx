@@ -31,12 +31,12 @@ const jetbrainsMono = JetBrains_Mono({
 })
 
 export const metadata: Metadata = {
-  title: 'VIDEO EDITOR // VISUAL STORYTELLER',
+  title: 'ANDRÉ LUCAS // EDITOR',
   description: 'Portfólio cinematográfico interativo. Projetando visão através da lente.',
-  keywords: ['video editor', 'visual storyteller', 'commercial video', 'portfolio', 'cinematic'],
-  authors: [{ name: 'VIDEO EDITOR' }],
+  keywords: ['andré lucas', 'editor de video', 'reels', 'social media', 'portfolio', 'cinematic'],
+  authors: [{ name: 'André Lucas' }],
   openGraph: {
-    title: 'VIDEO EDITOR // VISUAL STORYTELLER',
+    title: 'ANDRÉ LUCAS // EDITOR',
     description: 'Portfólio cinematográfico interativo.',
     type: 'website',
   },
