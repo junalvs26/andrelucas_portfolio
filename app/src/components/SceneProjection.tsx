@@ -61,6 +61,10 @@ export default function SceneProjection({
 
   const framesRef = useRef<HTMLDivElement>(null)
   const [focused, setFocused] = useState(0)
+  const [lowPower, setLowPower] = useState(false)
+
+  // Espelho para nao re-renderizar a cada frame so por causa da flag.
+  const lowPowerRef = useRef(false)
 
   useEffect(() => {
     const wrap = framesRef.current
@@ -74,6 +78,10 @@ export default function SceneProjection({
     let lastFocused = -1
 
     return subscribeMotion((state) => {
+      if (state.lowPower !== lowPowerRef.current) {
+        lowPowerRef.current = state.lowPower
+        setLowPower(state.lowPower)
+      }
       if (state.weight.projection <= 0.0015) return
 
       // Posicao continua na lista de projetos, 0..n-1.
@@ -136,7 +144,7 @@ export default function SceneProjection({
           (ASPECT_CLASSES[FRAME_ASPECT] ?? "aspect-video")
         }
       >
-        {COMMERCIAL_PROJECTS.map((proj) => (
+        {COMMERCIAL_PROJECTS.map((proj, i) => (
           <div
             key={proj.id}
             data-frame
@@ -147,7 +155,25 @@ export default function SceneProjection({
               videoSrc={proj.video}
               poster={proj.poster}
               title={proj.title}
-              active={active && !lightboxOpen}
+              /*
+                So o quadro em foco (e o vizinho, no desktop) decodifica.
+
+                Antes era `active` puro, ou seja, os QUATRO videos tocavam ao
+                mesmo tempo para exibir um. Somado aos tres da galeria, davam
+                sete decodificadores simultaneos - em celular isso estoura a
+                memoria de midia e o navegador comeca a descartar
+                decodificadores, o que aparece como quadro preto no lugar do
+                video. Era a causa das "imagens quebradas" no celular, junto com
+                o travamento.
+
+                No desktop mantem-se o vizinho tocando, senao o crossfade entra
+                num quadro parado no primeiro frame.
+              */
+              active={
+                active &&
+                !lightboxOpen &&
+                Math.abs(focused - i) <= (lowPower ? 0 : 1)
+              }
               className="h-full w-full rounded-[3px]"
             />
             {/* Moldura de projecao: borda fina mais um halo externo, para o

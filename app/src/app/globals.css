@@ -161,6 +161,23 @@ body {
   body {
     cursor: auto;
   }
+
+  /*
+   * `backdrop-filter` desligado no toque.
+   *
+   * Ele forca o compositor a ler de volta o que ja foi pintado atras do
+   * elemento e desfocar essa regiao a cada frame. Num GPU movel isso e caro o
+   * bastante para derrubar a taxa de quadros sozinho, e aqui ele aparece em
+   * elementos que rolam junto com a cena - o pior caso.
+   *
+   * O fundo semitransparente dos mesmos elementos (`bg-void/60`, `/95`) fica,
+   * entao a legibilidade nao muda; sai so o desfoque do que esta atras.
+   */
+  .backdrop-blur-sm,
+  .backdrop-blur-\[2px\] {
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+  }
 }
 
 @media (max-width: 768px) {

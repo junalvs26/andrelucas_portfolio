@@ -76,6 +76,8 @@ export default function SceneGallery({
 
   const trackRef = useRef<HTMLDivElement>(null)
   const [focused, setFocused] = useState(0)
+  const [lowPower, setLowPower] = useState(false)
+  const lowPowerRef = useRef(false)
 
   useEffect(() => {
     const track = trackRef.current
@@ -92,6 +94,10 @@ export default function SceneGallery({
     let primed = false
 
     return subscribeMotion((state) => {
+      if (state.lowPower !== lowPowerRef.current) {
+        lowPowerRef.current = state.lowPower
+        setLowPower(state.lowPower)
+      }
       if (state.weight.gallery <= 0.0015) return
 
       const viewport = track.parentElement?.clientWidth ?? window.innerWidth
@@ -139,7 +145,9 @@ export default function SceneGallery({
         el.style.transform = transform
         el.style.opacity = opacity.toFixed(3)
         el.style.filter =
-          blur > 0.1 && !state.prefersReducedMotion ? "blur(" + blur.toFixed(2) + "px)" : "none"
+          blur > 0.1 && !state.prefersReducedMotion && !state.lowPower
+            ? "blur(" + blur.toFixed(2) + "px)"
+            : "none"
       }
 
       const nearest = Math.round(smoothCursor)
@@ -190,7 +198,11 @@ export default function SceneGallery({
                   videoSrc={proj.video}
                   poster={proj.poster}
                   title={proj.title}
-                  active={active && !lightboxOpen && Math.abs(focused - i) <= 1}
+                  // Em aparelho fraco, so o card em foco decodifica. Ver a nota
+                  // equivalente em `SceneProjection`.
+                  active={
+                    active && !lightboxOpen && Math.abs(focused - i) <= (lowPower ? 0 : 1)
+                  }
                   className="h-full w-full rounded-[3px]"
                 />
 

@@ -98,9 +98,14 @@ export default function RevealText({
         const y = lerp(rise, 0, t)
         el.style.transform = "translate3d(0," + y.toFixed(2) + "px,0)"
 
-        if (blur > 0 && !state.prefersReducedMotion) {
+        // Um `filter: blur()` POR CARACTERE: num titulo de 18 letras sao 18
+        // camadas desfocadas por frame. E o custo se multiplica pelo numero de
+        // textos em cena. Em aparelho fraco fica so a opacidade e o rise.
+        if (blur > 0 && !state.prefersReducedMotion && !state.lowPower) {
           const b = lerp(blur, 0, t)
           el.style.filter = b > 0.1 ? "blur(" + b.toFixed(2) + "px)" : "none"
+        } else if (el.style.filter !== "none" && el.style.filter !== "") {
+          el.style.filter = "none"
         }
       }
     })

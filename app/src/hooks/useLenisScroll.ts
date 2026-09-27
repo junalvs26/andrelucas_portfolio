@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from "react"
 import Lenis from "lenis"
 import { gsap } from "gsap"
 import { SceneId } from "@/config/scenes"
-import { commitMotion, motion, setReducedMotion } from "@/lib/motion"
+import { commitMotion, motion, setLowPower, setReducedMotion } from "@/lib/motion"
 import type { LenisScrollReturn } from "@/types/scene"
 
 const lenisRef = { current: null as Lenis | null }
@@ -35,6 +35,32 @@ export function useLenisScroll(): LenisScrollReturn {
   useEffect(() => {
     const reduced = window.matchMedia("(prefers-reduced-motion: reduce)")
     setReducedMotion(reduced.matches)
+
+    /*
+      Deteccao de aparelho sem folga, feita UMA vez.
+
+      Tres sinais, e basta um:
+
+      - `(pointer: coarse)`: dedo em vez de mouse. Na pratica, celular ou
+        tablet - onde `filter: blur()` em camada de tela cheia custa ordens de
+        grandeza mais que num desktop, porque o GPU movel refaz o blur a cada
+        frame sobre uma textura do tamanho da tela.
+      - `deviceMemory <= 4`: menos de 4 GB. E onde o navegador comeca a
+        descartar decodificadores de video, o que aparece como quadro preto ou
+        "imagem quebrada" no meio da galeria.
+      - `hardwareConcurrency <= 4`: poucos nucleos para decodificar video,
+        rodar tres canvas e compor a pagina no mesmo frame.
+
+      Nao e feature detection perfeita - nao existe uma. E um corte grosseiro
+      que erra para o lado seguro: o pior caso e um desktop modesto perder o
+      desfoque de transicao, que ninguem nota, em vez de um celular travar.
+    */
+    const nav = navigator as Navigator & { deviceMemory?: number }
+    const weak =
+      window.matchMedia("(pointer: coarse)").matches ||
+      (typeof nav.deviceMemory === "number" && nav.deviceMemory <= 4) ||
+      (typeof nav.hardwareConcurrency === "number" && nav.hardwareConcurrency <= 4)
+    setLowPower(weak)
     const onReducedChange = (e: MediaQueryListEvent) => setReducedMotion(e.matches)
     reduced.addEventListener("change", onReducedChange)
 

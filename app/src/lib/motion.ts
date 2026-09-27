@@ -45,6 +45,15 @@ export interface MotionState {
   /** performance.now() do frame atual. */
   time: number
   prefersReducedMotion: boolean
+  /**
+   * Aparelho sem folga para efeitos caros (celular, tablet, maquina fraca).
+   *
+   * Diferente de `prefersReducedMotion`, que e uma ESCOLHA do usuario sobre
+   * movimento: aqui o movimento continua igual, o que sai sao os efeitos que
+   * custam GPU desproporcionalmente - `filter: blur()` em camada de tela cheia
+   * e video decodificando fora de foco.
+   */
+  lowPower: boolean
 }
 
 const zeroed = () =>
@@ -67,6 +76,7 @@ export const motion: MotionState = {
   dt: 1 / 60,
   time: 0,
   prefersReducedMotion: false,
+  lowPower: false,
 }
 
 type Listener = (state: MotionState) => void
@@ -125,4 +135,8 @@ export function commitMotion(rawProgress: number, time: number, deltaSeconds: nu
 
 export function setReducedMotion(value: boolean) {
   motion.prefersReducedMotion = value
+}
+
+export function setLowPower(value: boolean) {
+  motion.lowPower = value
 }

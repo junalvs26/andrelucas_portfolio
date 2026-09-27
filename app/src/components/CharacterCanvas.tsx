@@ -417,7 +417,7 @@ export default function CharacterCanvas() {
       // O desfoque roda como filtro CSS no elemento, nao como `ctx.filter`.
       // `ctx.filter` reprocessa o bitmap a cada frame; o filtro CSS e
       // resolvido pelo compositor.
-      const blurPx = state.prefersReducedMotion ? 0 : pblur
+      const blurPx = state.prefersReducedMotion || state.lowPower ? 0 : pblur
       const filter = blurPx > 0.08 ? "blur(" + blurPx.toFixed(2) + "px)" : "none"
       if (filter !== lastFilter) {
         canvas.style.filter = filter

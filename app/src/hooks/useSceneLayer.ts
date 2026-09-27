@@ -160,14 +160,23 @@ export function useSceneLayer<T extends HTMLElement>(
         lastTransform = transform
       }
 
+      /*
+        O desfoque de entrada e o efeito mais caro da pagina em celular: e um
+        `filter: blur()` sobre uma camada do tamanho da viewport, recalculado a
+        cada frame da travessia. A opacidade e o transform sozinhos ja entregam
+        a transicao; o blur e tempero.
+      */
       const blurBase = o.blurFrom ?? 0
-      if (blurBase > 0 && !state.prefersReducedMotion) {
+      if (blurBase > 0 && !state.prefersReducedMotion && !state.lowPower) {
         const blur = lerp(blurBase, 0, e)
         const filter = blur > 0.05 ? "blur(" + blur.toFixed(2) + "px)" : "none"
         if (filter !== lastFilter) {
           el.style.filter = filter
           lastFilter = filter
         }
+      } else if (lastFilter !== "none") {
+        el.style.filter = "none"
+        lastFilter = "none"
       }
     })
   }, [id])

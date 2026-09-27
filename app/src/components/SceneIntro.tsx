@@ -86,7 +86,9 @@ export default function SceneIntro() {
 
         el.style.transform = "translate3d(0," + y.toFixed(2) + "px,0)"
         el.style.filter =
-          blur > 0.1 && !state.prefersReducedMotion ? "blur(" + blur.toFixed(2) + "px)" : "none"
+          blur > 0.1 && !state.prefersReducedMotion && !state.lowPower
+            ? "blur(" + blur.toFixed(2) + "px)"
+            : "none"
       }
 
       // Seta pulsando abaixo da chamada, por tempo. Só comeca depois da frase
