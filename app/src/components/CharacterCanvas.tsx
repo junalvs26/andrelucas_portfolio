@@ -69,8 +69,6 @@ const MAX_SPRITE_UPSCALE = 1.35
 interface Sequences {
   frames: Record<SequenceName, (HTMLImageElement | null)[]>
   glow: HTMLImageElement | null
-  /** Cone de luz projetado pelos oculos. Asset ja existia, sem uso ate aqui. */
-  beam: HTMLImageElement | null
 }
 
 /**
@@ -116,15 +114,8 @@ async function loadSequences(): Promise<Sequences> {
     })
   )
 
-  let beam: HTMLImageElement | null = null
-  jobs.push(
-    load("/ui/projection_beam.webp").then((img) => {
-      beam = img
-    })
-  )
-
   await Promise.all(jobs)
-  return { frames, glow, beam }
+  return { frames, glow }
 }
 
 interface DrawFrame {
@@ -199,6 +190,7 @@ export default function CharacterCanvas() {
     let initialised = false
     let lastFilter = ""
 
+
     const pickFrame = (
       seq: Sequences,
       stateName: string,
@@ -226,7 +218,6 @@ export default function CharacterCanvas() {
       h: number,
       pose: Pose,
       glowAmount: number,
-      beamAmount: number,
       time: number
     ) => {
       const cfg = STATE_MAP[stateName] || STATE_MAP.idle
@@ -323,41 +314,15 @@ export default function CharacterCanvas() {
         ctx.drawImage(seq.glow, glowX, glowY, glowW, glowH)
         ctx.globalCompositeOperation = "source-over"
 
-        // ---- Feixe de projecao ------------------------------------------
-        // A peca inteira se chama "projetando visao", o personagem tem oculos
-        // que brilham, e ate aqui nao saia NADA deles: a metafora central
-        // estava escrita nos textos e nunca mostrada. O asset ja existia.
-        //
-        // Sai da mesma origem do brilho, entao acompanha o personagem de graca.
-        if (seq.beam && beamAmount > 0.01) {
-          const originX = glowX + glowW / 2
-          const originY = glowY + glowH / 2
+        /*
+          O feixe NAO e desenhado por codigo.
 
-          // O quadro projetado fica no centro da tela; o personagem costuma
-          // estar a esquerda nesta cena. O feixe aponta da cabeca para o alvo.
-          const targetX = w / 2
-          const targetY = h * 0.42
-          const dx = targetX - originX
-          const dy = targetY - originY
-          const distance = Math.hypot(dx, dy)
-          const angle = Math.atan2(dy, dx)
-
-          const beamLength = Math.max(distance * 1.15, w * 0.25)
-          const beamHeight = beamLength * 0.52
-
-          ctx.save()
-          ctx.translate(originX, originY)
-          ctx.rotate(angle)
-          // O asset tem o apice a DIREITA e abre para a esquerda; espelhamos no
-          // eixo X para o apice ficar na origem (os oculos) e a abertura no
-          // alvo.
-          ctx.scale(-1, 1)
-          ctx.globalCompositeOperation = "lighter"
-          ctx.globalAlpha = alpha * beamAmount * (0.26 + Math.sin(time / 900) * 0.05)
-          ctx.drawImage(seq.beam, -beamLength, -beamHeight / 2, beamLength, beamHeight)
-          ctx.globalCompositeOperation = "source-over"
-          ctx.restore()
-        }
+          Ele ja vem pintado nos sprites de `observing` e `projecting_05/06`,
+          na perspectiva certa e preso aos oculos. Desenhar um segundo por
+          cima dava dois cones em angulos diferentes. O que o codigo fazia de
+          util - impedir o corte reto na borda do arquivo - foi resolvido nos
+          proprios .webp, cuja nevoa agora termina em degrade.
+        */
       }
 
       ctx.globalAlpha = 1
@@ -430,11 +395,6 @@ export default function CharacterCanvas() {
       const pose: Pose = { x: px, y: py, scale: pscale, lean: plean }
       const glowAmount = target.glow
 
-      // O feixe so existe na cena de projecao, e a intensidade e o peso da cena
-      // vezes o brilho dos oculos - entao ele nasce e morre junto com a cena,
-      // sem precisar de limiar proprio.
-      const beamAmount = state.weight.projection * glowAmount
-
       if (blend < 1 && prevState) {
         const outFrame = pickFrame(seq, prevState, prevSequenceTime)
         if (outFrame) {
@@ -448,7 +408,6 @@ export default function CharacterCanvas() {
             h,
             pose,
             glowAmount,
-            beamAmount,
             state.time
           )
         }
@@ -466,10 +425,10 @@ export default function CharacterCanvas() {
           h,
           pose,
           glowAmount,
-          beamAmount,
           state.time
         )
       }
+
     })
   }, [])
 

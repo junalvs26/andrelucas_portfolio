@@ -102,6 +102,22 @@ export function useSceneLayer<T extends HTMLElement>(
         visible = shouldBeVisible
         el.style.visibility = visible ? "visible" : "hidden"
         el.style.willChange = visible ? "opacity, transform, filter" : "auto"
+        /*
+          `display: none` alem de `visibility` e `opacity`.
+
+          Os dois primeiros escondem a camada no MODELO, mas ela continua sendo
+          uma camada do compositor: com `will-change` e `translate3d` ativos, o
+          navegador guarda uma textura dela na GPU. Em aparelho com pouca
+          memoria de video essa textura pode continuar sendo apresentada por
+          alguns quadros mesmo depois da opacidade ir a zero - e o "quadro
+          fantasma" que aparece borrado por cima da abertura. `display: none`
+          tira o elemento da arvore de renderizacao, entao nao ha textura para
+          sobrar.
+
+          Custa pouco: cada camada alterna isso umas poucas vezes na visita
+          inteira, nunca por quadro.
+        */
+        el.style.display = visible ? "" : "none"
       }
       if (!visible) {
         /*

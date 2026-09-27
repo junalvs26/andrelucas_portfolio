@@ -41,3 +41,7 @@ portfolio 2*
 
 # Qualquer entrega futura de master, no mesmo espirito.
 *.zip
+
+# Copia local dos sprites antes do degrade no feixe. O historico do git ja
+# guarda os originais, entao esta pasta e conveniencia de trabalho.
+_beam_backup/
