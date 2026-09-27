@@ -5,6 +5,7 @@ import RevealText from "@/components/RevealText"
 import { clamp01, lerp, smootherstep } from "@/config/scenes"
 import { subscribeMotion } from "@/lib/motion"
 import { useSceneLayer } from "@/hooks/useSceneLayer"
+import { asset } from "@/lib/asset"
 
 const CONTACTS = [
   {
@@ -146,7 +147,7 @@ export default function ContactHub() {
             }}
           >
             <img
-              src="/ui/rebirth_wave.webp"
+              src={asset("/ui/rebirth_wave.webp")}
               alt=""
               decoding="async"
               draggable={false}

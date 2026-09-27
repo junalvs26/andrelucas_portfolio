@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from 'next'
 import { JetBrains_Mono } from 'next/font/google'
 import './globals.css'
 import { ReducedMotionProvider } from '@/hooks/useReducedMotion'
+import { asset } from "@/lib/asset"
 
 /**
  * Fontes auto-hospedadas.
@@ -76,9 +77,9 @@ export default function RootLayout({
         {/* Somente os assets da primeira cena. Pre-carregar as seis cenas fazia
             o navegador competir por banda com o CSS e com os frames do
             personagem, que sao o que aparece primeiro. */}
-        <link rel="preload" as="image" href="/backgrounds/scene_01_void.webp" />
-        <link rel="preload" as="image" href="/character/frames/idle_01.webp" />
-        <link rel="preload" as="image" href="/ui/glasses_glow.webp" />
+        <link rel="preload" as="image" href={asset("/backgrounds/scene_01_void.webp")} />
+        <link rel="preload" as="image" href={asset("/character/frames/idle_01.webp")} />
+        <link rel="preload" as="image" href={asset("/ui/glasses_glow.webp")} />
       </head>
       <body className="min-h-screen bg-void text-pureWhite antialiased">
         <ReducedMotionProvider>{children}</ReducedMotionProvider>

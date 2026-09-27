@@ -4,6 +4,7 @@ import { useEffect, useRef } from "react"
 import { clamp01, damp, lerp, smootherstep } from "@/config/scenes"
 import { subscribeMotion } from "@/lib/motion"
 import { useResizeObserver } from "@/hooks/useRenderLoop"
+import { asset } from "@/lib/asset"
 
 type SequenceName =
   | "idle"
@@ -90,7 +91,7 @@ async function loadSequences(): Promise<Sequences> {
       img.decoding = "async"
       img.onload = () => resolve(img)
       img.onerror = () => resolve(null)
-      img.src = src
+      img.src = asset(src)
     })
 
   for (const name of Object.keys(FRAME_COUNTS) as SequenceName[]) {

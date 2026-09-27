@@ -3,6 +3,7 @@
 import { useEffect, useRef } from "react"
 import { SceneId, clamp01, lerp } from "@/config/scenes"
 import { subscribeMotion } from "@/lib/motion"
+import { asset } from "@/lib/asset"
 
 /**
  * Camadas de atmosfera: nevoa em parallax e plano de chao.
@@ -145,7 +146,7 @@ export default function AtmosphereLayers() {
         style={{ opacity: 0, willChange: "opacity" }}
       >
         <img
-          src="/ui/env_floor.webp"
+          src={asset("/ui/env_floor.webp")}
           alt=""
           decoding="async"
           draggable={false}
@@ -170,7 +171,7 @@ export default function AtmosphereLayers() {
           }}
         >
           <img
-            src={layer.src}
+            src={asset(layer.src)}
             alt=""
             decoding="async"
             loading={i === 0 ? "eager" : "lazy"}

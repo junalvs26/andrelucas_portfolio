@@ -1,0 +1,78 @@
+# Publica o export estatico no GitHub Pages a cada push no master.
+#
+# O site e `output: 'export'`, entao nao ha servidor: o job so compila e sobe a
+# pasta `app/out`. O repositorio precisa estar PUBLICO (Pages e pago em
+# repositorio privado) e, em Settings > Pages, a origem precisa estar como
+# "GitHub Actions".
+name: Deploy
+
+on:
+  push:
+    branches: [master]
+  # Permite disparar a mao pela aba Actions, util para republicar sem commit.
+  workflow_dispatch:
+
+# O token precisa poder escrever nas Pages; `id-token` e exigido pelo
+# deploy-pages para provar a origem do artefato.
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Uma publicacao por vez. `cancel-in-progress: false` porque cancelar um deploy
+# no meio pode deixar o site parcialmente atualizado.
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: app/package-lock.json
+
+      # `npm ci` e nao `npm install`: respeita o lockfile e falha se ele estiver
+      # fora de sincronia, em vez de resolver versoes diferentes das testadas.
+      - run: npm ci
+        working-directory: app
+
+      - run: npx tsc --noEmit
+        working-directory: app
+
+      - run: npm run build
+        working-directory: app
+        env:
+          # O site fica em usuario.github.io/<repositorio>, um SUBCAMINHO.
+          # Esta variavel alimenta o `basePath` do next.config.js e o helper
+          # `src/lib/asset.ts` ao mesmo tempo.
+          #
+          # Se um dia o repositorio virar `usuario.github.io` (Pages de
+          # usuario, servido na raiz) ou entrar um dominio proprio, apague
+          # estas duas linhas - com a variavel vazia tudo volta para a raiz.
+          NEXT_PUBLIC_BASE_PATH: /${{ github.event.repository.name }}
+
+      # `.nojekyll` impede o Jekyll do Pages de ignorar arquivos e pastas que
+      # comecam com underscore. Sem ele, `_next/` inteiro nao e publicado e o
+      # site carrega em branco.
+      - run: touch app/out/.nojekyll
+
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: app/out
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4

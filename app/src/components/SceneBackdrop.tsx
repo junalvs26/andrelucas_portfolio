@@ -3,6 +3,7 @@
 import { useEffect, useRef } from "react"
 import { SCENES, SceneId, lerp } from "@/config/scenes"
 import { subscribeMotion } from "@/lib/motion"
+import { asset } from "@/lib/asset"
 
 const BACKDROPS: Record<SceneId, string> = {
   void: "/backgrounds/scene_01_void.webp",
@@ -108,7 +109,7 @@ export default function SceneBackdrop() {
             style={{ opacity: 0, backfaceVisibility: "hidden" }}
           >
             <img
-              src={BACKDROPS[id]}
+              src={asset(BACKDROPS[id])}
               alt=""
               decoding="async"
               loading={id === "void" || id === "reveal" ? "eager" : "lazy"}

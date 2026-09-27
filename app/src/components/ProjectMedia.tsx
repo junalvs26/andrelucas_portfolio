@@ -1,6 +1,7 @@
 "use client"
 
 import { useEffect, useRef, useState } from "react"
+import { asset } from "@/lib/asset"
 
 interface ProjectMediaProps {
   videoSrc: string
@@ -104,7 +105,7 @@ export default function ProjectMedia({
   return (
     <div className={"relative overflow-hidden " + className}>
       <img
-        src={poster}
+        src={asset(poster)}
         alt={title}
         decoding="async"
         loading="lazy"
@@ -124,7 +125,7 @@ export default function ProjectMedia({
           muted
           playsInline
           preload={active ? "metadata" : "none"}
-          poster={poster}
+          poster={asset(poster)}
           aria-label={title}
           onPlaying={() => setPlaying(true)}
           onError={(e) => {
@@ -144,8 +145,8 @@ export default function ProjectMedia({
             setUnavailable(true)
           }}
         >
-          <source src={videoSrc} type="video/webm" />
-          <source src={videoSrc.replace(".webm", ".mp4")} type="video/mp4" />
+          <source src={asset(videoSrc)} type="video/webm" />
+          <source src={asset(videoSrc.replace(".webm", ".mp4"))} type="video/mp4" />
         </video>
       )}
     </div>

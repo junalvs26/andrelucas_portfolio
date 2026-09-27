@@ -11,9 +11,25 @@
  *
  * @type {import('next').NextConfig}
  */
+/*
+ * Subcaminho de publicacao.
+ *
+ * Vazio por padrao: `npm run dev` e qualquer host que sirva na raiz nao mudam.
+ * No GitHub Pages de PROJETO o site fica em `usuario.github.io/repositorio`, e
+ * ai `NEXT_PUBLIC_BASE_PATH=/repositorio` faz o Next emitir os chunks em
+ * `/repositorio/_next/*`.
+ *
+ * `basePath` cobre SO o que o Next emite. Os assets escritos a mao - fundos,
+ * frames do personagem, videos - passam pelo helper `src/lib/asset.ts`, que le
+ * a mesma variavel. Os dois precisam andar juntos.
+ */
+const basePath = (process.env.NEXT_PUBLIC_BASE_PATH || '').replace(/\/$/, '')
+
 const nextConfig = {
   distDir: process.env.NEXT_DIST_DIR || '.next',
   output: 'export',
+  basePath: basePath || undefined,
+  assetPrefix: basePath || undefined,
   images: {
     unoptimized: true,
     formats: ['image/avif', 'image/webp'],
