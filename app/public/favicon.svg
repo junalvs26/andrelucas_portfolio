@@ -1,8 +1,0 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="32" height="32">
-  <defs>
-    <filter id="favGlow">
-      <feDropShadow dx="0" dy="0" stdDeviation="1.5" flood-color="#FFFFFF" flood-opacity="0.8"/>
-    </filter>
-  </defs>
-  <path d="M4 14 C4 11, 7 9, 11 9 C14 9, 15 11, 16 12 C17 11, 18 9, 21 9 C25 9, 28 11, 28 14 C28 17, 25 19, 21 19 C18 19, 17 17, 16 16 C15 17, 14 19, 11 19 C7 19, 4 17, 4 14 Z" fill="#FFFFFF" filter="url(#favGlow)"/>
-</svg>

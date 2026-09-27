@@ -41,6 +41,24 @@ export const metadata: Metadata = {
     description: 'Portfólio cinematográfico interativo.',
     type: 'website',
   },
+  /*
+    Icone da aba: a cabeca do personagem, recortada de `character/frames`.
+    Antes nao havia `icons` nenhum, entao o navegador pedia `/favicon.ico`, que
+    nao existe - era um 404 em toda visita.
+
+    Os caminhos passam por `asset()` pelo mesmo motivo do resto: publicado num
+    subcaminho, um `/icons/...` cru aponta para fora do site.
+
+    Os PNG sao compostos sobre PRETO de proposito. Em 32px o alfa vira franja
+    cinza, e numa aba de tema claro a cabeca ficaria recortada com halo sujo.
+  */
+  icons: {
+    icon: [
+      { url: asset('/icons/favicon-32.png'), sizes: '32x32', type: 'image/png' },
+      { url: asset('/icons/icon-512.png'), sizes: '512x512', type: 'image/png' },
+    ],
+    apple: asset('/icons/apple-touch-icon.png'),
+  },
 }
 
 export const viewport: Viewport = {

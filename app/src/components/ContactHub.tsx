@@ -6,22 +6,28 @@ import { clamp01, lerp, smootherstep } from "@/config/scenes"
 import { subscribeMotion } from "@/lib/motion"
 import { useSceneLayer } from "@/hooks/useSceneLayer"
 import { asset } from "@/lib/asset"
+import ContactIcon, { type ContactIconName } from "@/components/ContactIcons"
 
-const CONTACTS = [
+const CONTACTS: {
+  icon: ContactIconName
+  label: string
+  value: string
+  action: string
+}[] = [
   {
-    icon: "MAIL",
+    icon: "mail",
     label: "EMAIL",
     value: "andreluck001@gmail.com",
     action: "mailto:andreluck001@gmail.com",
   },
   {
-    icon: "IG",
+    icon: "instagram",
     label: "INSTAGRAM",
     value: "@_oded.edits",
     action: "https://instagram.com/_oded.edits",
   },
   {
-    icon: "WA",
+    icon: "whatsapp",
     label: "WHATSAPP",
     value: "+55 98 98536-1399",
     // `wa.me` exige o numero so com digitos e COM o codigo do pais (55).
@@ -183,7 +189,10 @@ export default function ContactHub() {
           className="projected-text mt-3 text-3xl font-light tracking-[0.3em] md:text-5xl lg:text-6xl"
         />
 
-        <div ref={buttonsRef} className="mx-auto mt-10 flex max-w-xs flex-col gap-4">
+        {/* max-w-sm, nao max-w-xs: com o icone ocupando a coluna da esquerda, em
+            320px o endereco de e-mail era truncado - um cartao de contato que
+            esconde o contato. */}
+        <div ref={buttonsRef} className="mx-auto mt-10 flex max-w-sm flex-col gap-4">
           {CONTACTS.map((contact) => (
             <div
               key={contact.label}
@@ -198,14 +207,24 @@ export default function ContactHub() {
                 className="group flex flex-1 items-center gap-4"
                 aria-label={contact.label + ": " + contact.value}
               >
-                <span className="font-mono text-xl transition-transform duration-300 group-hover:translate-x-0.5 md:text-2xl">
-                  {contact.icon}
-                </span>
+                {/*
+                  Tamanho fixo em rem e `shrink-0`: o icone e a ancora visual da
+                  coluna da esquerda, e se ele encolhesse junto com um rotulo
+                  longo os tres cartoes deixariam de alinhar.
+
+                  A cor sai de `text-neonGray` e sobe para branco no hover do
+                  cartao, junto com o resto - por isso os SVG usam
+                  `currentColor` em vez de cor propria.
+                */}
+                <ContactIcon
+                  name={contact.icon}
+                  className="h-6 w-6 shrink-0 text-neonGray transition-all duration-300 group-hover:translate-x-0.5 group-hover:text-pureWhite"
+                />
                 <span className="block">
                   <span className="mono-text block text-[0.55rem] tracking-[0.35em] text-neonGray">
                     {contact.label}
                   </span>
-                  <span className="mono-text block max-w-[190px] truncate text-xs font-light tracking-[0.2em]">
+                  <span className="mono-text block max-w-[225px] truncate text-xs font-light tracking-[0.18em]">
                     {contact.value}
                   </span>
                 </span>
