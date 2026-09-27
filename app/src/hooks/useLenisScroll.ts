@@ -71,7 +71,17 @@ export function useLenisScroll(): LenisScrollReturn {
       easing: (t: number) => 1 - Math.pow(2, -10 * t),
       lerp: reduced.matches ? 1 : 0.085,
       wheelMultiplier: 0.9,
-      touchMultiplier: 1.6,
+      /*
+        0.9, nao 1.6.
+        Medido: com 1.6, um swipe de polegar de 400px empurrava 640px de
+        rolagem - 12.6% da pagina, quase uma cena inteira de uma vez so. No
+        desktop um clique de roda avanca ~1.7%, entao o mesmo gesto natural
+        tinha uma granularidade quase dez vezes mais grossa no celular, e os
+        videos passavam antes de dar tempo de ver.
+        Abaixo de ~0.8 o gesto comeca a parecer "pesado", como se a pagina
+        resistisse ao dedo; 0.9 mantem a resposta imediata e so tira o excesso.
+      */
+      touchMultiplier: 0.9,
       syncTouch: true,
       // A roda em degraus grandes e o que mais quebra a continuidade; isso
       // espalha cada degrau ao longo da inercia.

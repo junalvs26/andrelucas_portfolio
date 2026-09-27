@@ -45,13 +45,22 @@ export default function PortfolioPage() {
   return (
     <div className="relative w-full">
       {/*
-        Altura de rolagem: 700vh.
+        Altura de rolagem: 900vh no celular, 700vh a partir de `md`.
         Antes eram 300vh para seis cenas, ou seja, cerca de 1/3 de viewport por
         cena - curto demais para qualquer transicao respirar, e o motivo de
         tudo parecer atropelado. Com 700vh nenhuma cena recebe menos de
         ~0.8 viewport de rolagem.
+
+        Por que o celular precisa de MAIS que o desktop: o comprimento e medido
+        em viewports, entao os dois recebiam a mesma quantidade de rolagem por
+        cena - mas o gesto e que e diferente. Um clique de roda anda ~100px; um
+        swipe de polegar anda 400px e ainda ganha inercia. Mesmo com o
+        `touchMultiplier` corrigido, a unidade minima de gesto no celular e
+        varias vezes maior, e so ela ja atravessava boa parte de uma cena.
+        Esticar a pagina divide o mesmo conteudo por mais pixels de rolagem, o
+        que devolve a cada cena o tempo de ser vista.
       */}
-      <div className="h-[700vh] w-full" aria-hidden="true" />
+      <div className="h-[900vh] w-full md:h-[700vh]" aria-hidden="true" />
 
       {/* Palco fixo. Todas as cenas ficam montadas o tempo todo e sao
           compostas por opacidade/transform - nunca montadas e desmontadas,
